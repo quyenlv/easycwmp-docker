@@ -1,17 +1,23 @@
-FROM ubuntu:16.04
-LABEL maintainer="gaimande@gmail.com"
+#
+# Ubuntu Dockerfile
+#
+# https://github.com/dockerfile/ubuntu
+#
+
+# Pull base image.
+FROM ubuntu:18.04
 
 # Install.
 RUN apt-get update && \
 mkdir -p /opt/dev && \
 mkdir -p /opt/git && \
-apt-get -y install git net-tools && \
-git clone git://github.com/json-c/json-c.git /opt/git/json-c && \
-cd /opt/git/json-c/ && \
-apt-get install -y dh-autoreconf && \
-apt-get install -y autoconf-archive && \
-autoreconf -i && \
-./configure --prefix=/usr && \
+apt-get -y install git
+RUN git clone  https://github.com/json-c/json-c.git /opt/git/json-c
+RUN cd /opt/git/json-c/ && git checkout json-c-0.13
+RUN ls /opt/git/json-c/configure.ac
+RUN apt-get install -y dh-autoreconf 
+RUN apt-get install -y autoconf-archive  build-essential 
+RUN cd /opt/git/json-c/ && ./configure --prefix=/usr && \
 make && \
 make install && \
 ln -sf /usr/include/json-c /usr/include/json && \
@@ -90,3 +96,4 @@ ADD startup.sh /
 
 ENTRYPOINT ["sh"] 
 CMD ["/startup.sh"]
+
